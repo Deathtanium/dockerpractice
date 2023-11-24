@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  driver:
+    #build dockerfile at shared/src/driver/Dockerfile
+    build: ./shared/src/driver
+    volumes:
+      - "C:/Users/misho/Desktop/dockerpractice/shared:/shared"
+    ports:
+      - "5001:5001"
+    command: python /shared/src/driver/app.py
+    restart: always
+
+  unpacker:
+    build: ./shared/src/unpacker
+    volumes:
+      - "C:/Users/misho/Desktop/dockerpractice/shared:/shared"
+    ports:
+      - "5002:5002"
+    command: python /shared/src/unpacker/app.py
+    restart: always
+
+  #optimizer:
+  #  image: python:3.11.6-slim
+  #  volumes:
+  #    - "C:/Users/misho/Desktop/dockerpractice/shared:/shared"
+  #  ports:
+  #    - "5003:5003"
+  #  command: python /shared/src/optimizer/app.py
+  #  restart: always
+#
+  #ocr:
+  #  image: python:3.11.6-slim
+  #  volumes:
+  #    - "C:/Users/misho/Desktop/dockerpractice/shared:/shared"
+  #  ports:
+  #    - "5004:5004"
+  #  command: python /shared/src/ocr/app.py
+  #  restart: always
