@@ -4,8 +4,12 @@ import os
 import json
 import time
 import watchdog as wd
+import sys
 
 from watchdog.observers import Observer
+
+sys.path.append('../../misc')
+from utils import *
 
 input_folder = "/shared/io/step1"
 #output_folder = "/shared/step2"

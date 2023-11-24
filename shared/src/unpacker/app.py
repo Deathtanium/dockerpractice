@@ -8,6 +8,10 @@ import logging as log
 import cv2
 import numpy as np
 from pdf2image import convert_from_path
+import sys
+
+sys.path.append('../../misc')
+from utils import *
 
 fh = log.FileHandler("/shared/logs/unpacker.log")
 
@@ -19,7 +23,7 @@ lport = 5001
 self_host = 'unpacker'
 self_port = 5002
 
-rhost = 'optimizer'
+rhost = 'ocr'
 rport = 5003
 
 out_folder = '/shared/io/step2'
@@ -41,7 +45,7 @@ def handle_data(data:bytes):
             log.info('handle_data - sending to optimizer')
             ret = {
                 'filename': filename,
-                'bytes': filebytes
+                'bytes': filebytes.decode('latin-1')
             }
             ret = json.dumps(ret).encode()
             return ret
@@ -51,18 +55,6 @@ def handle_data(data:bytes):
     except Exception as e:
         log.error('handle_data - {}'.format(e))
         return b''
-    
-def read_till_null(sock:socket.socket):
-    data = b''
-    while True:
-        d = sock.recv(1024)
-        if not d:
-            break
-        data += d
-        if b'\0' in d:
-            break
-    data = data[:-1]
-    return data
     
 def thread_handler(client:socket.socket, addr):
     log.info('thread_handler - new connection from {}'.format(addr))
@@ -88,14 +80,5 @@ def thread_handler(client:socket.socket, addr):
             break
 
 
-log.basicConfig(level=log.INFO, handlers=[fh])
-log.info('main - starting unpacker')
-if not os.path.exists(out_folder):
-    os.makedirs(out_folder)
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.bind((self_host, self_port))
-sock.listen(5)
-while True:
-    client, addr = sock.accept()
-    threading.Thread(target=thread_handler, args=(client, addr)).start()
-
+sockserver = ThreadedServer(self_host, self_port, thread_handler, "/shared/logs/unpacker.log")
+sockserver.listen()
