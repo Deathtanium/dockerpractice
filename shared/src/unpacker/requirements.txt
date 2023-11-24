@@ -1,0 +1,4 @@
+opencv-contrib-python
+numpy
+py7zr
+pdf2image
